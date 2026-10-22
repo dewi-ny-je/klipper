@@ -335,6 +335,9 @@ class ADS1X1X_pin:
                                          self._reactor.NOW)
 
     def _process_sample(self, eventtime):
+        if self.chip._printer.is_shutdown():
+            # The mcu ignores i2c commands while shutdown - stop polling
+            return self._reactor.NEVER
         sample = self.chip.sample(self)
         if sample is not None:
             # The sample is encoded in the top 12 or full 16 bits
